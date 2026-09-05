@@ -1,0 +1,23 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# SearXNG search provider — per-profile wiring (web profile only).
+#
+# APPEND this block to ~/.dsh/profiles/web/cordis.patch.yml (currently the
+# empty list `[]`). Same three entries as the home-level snippet
+# (config/cordis.patch.home.snippet.yml), scoped to this profile instead of
+# machine-wide: the profile patch layer applies after the bundle layers and
+# before the home layer, so a home-level entry for the same id would still
+# win. Pick ONE of the two snippets; do not apply both.
+# ─────────────────────────────────────────────────────────────────────────────
+- insert:
+    - id: web-searxng
+      name: dsh-searxng
+      inject: [web]
+      config:
+        baseURL: http://127.0.0.1:8888
+
+- id: web
+  config:
+    searchProvider: searxng
+
+- id: web-search-deepseek
+  disabled: true

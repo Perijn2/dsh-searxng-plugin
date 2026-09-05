@@ -1,0 +1,27 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# SearXNG provider settings section — merge into ~/.dsh/settings.yaml.
+#
+# The section key is the provider's settings namespace (`web-searxng`).
+# The user settings layer is re-projected PER CALL by the settings service,
+# so edits take effect on the NEXT web_search — no server restart (unlike
+# composition patches, which apply at boot).
+#
+# Every key is optional; the row config in the cordis patch and the
+# DSH_SEARXNG_BASE_URL environment variable are the fallbacks.
+# ─────────────────────────────────────────────────────────────────────────────
+web-searxng:
+  # SearXNG instance base URL; must serve the JSON API (formats: [html, json]).
+  baseURL: http://127.0.0.1:8888
+
+  # Optional request parameters, forwarded verbatim to /search:
+  # language: en
+  # categories: general          # comma-separated; "general,news" for both
+  # engines: google,duckduckgo   # comma-separated engine filter
+  # timeRange: week              # day | week | month | year
+  # safesearch: 1                # 0 = off, 1 = moderate (default), 2 = strict
+  # timeoutMs: 10000             # request deadline in milliseconds
+
+  # Optional, only for deployments fronting the instance with a token gate:
+  # apiKeyEnv: DSH_SEARXNG_API_KEY   # resolved via the credentials service,
+                                     # falling back to the launch environment;
+                                     # sent as `Authorization: Bearer <key>`

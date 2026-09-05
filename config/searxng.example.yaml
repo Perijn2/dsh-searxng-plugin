@@ -1,0 +1,34 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Minimal SearXNG server config enabling the JSON API the plugin speaks.
+#
+# SearXNG ships with `formats: [html]` only — the JSON format must be
+# enabled server-side or every request 403s with "search disabled".
+#
+# Run (container):
+#   docker run -d --name searxng -p 8888:8080 \
+#     -v $(pwd)/config/searxng.example.yaml:/etc/searxng/settings.yml:ro \
+#     searxng/searxng:latest
+#
+# Then verify from the host:
+#   curl -s 'http://127.0.0.1:8888/search?q=test&format=json' | head
+# ─────────────────────────────────────────────────────────────────────────────
+use_default_settings: true
+
+server:
+  # Generate with: openssl rand -hex 32
+  secret_key: CHANGE_ME
+  bind_address: 127.0.0.1
+  port: 8080
+  limiter: false
+  image_proxy: false
+
+# Required: enables GET /search?format=json
+formats:
+  - html
+  - json
+
+# Optional: the plugin forwards these names verbatim when configured
+# (categories: / engines: in settings). A few safe defaults:
+engines:
+  - name: duckduckgo
+    disabled: false

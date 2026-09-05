@@ -1,0 +1,51 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# SearXNG search provider — machine-wide wiring.
+#
+# APPEND this block to ~/.dsh/cordis.patch.yml (the home-level user patch
+# layer, applied over every profile). Do NOT replace the file: it already
+# carries the coding-doc-standard and gitbutler-commit-standard hook-bridge
+# inserts, which must stay.
+#
+# What each entry does:
+#
+# 1. `insert:` — a bare id/name patch only patches an EXISTING row; the
+#    `web-searxng` row does not exist in any bundle layer, so it must be
+#    INSERTED. `name: dsh-searxng` resolves from $DSH_HOME/node_modules
+#    (symlink the built repo there — see DESIGN.md, "Install, path A");
+#    publishing to npm and declaring the dependency works identically
+#    (path B).
+#
+# 2. `id: web` — the web seam row (declared in the dsh-base bundle, config
+#    `{ searchProvider: deepseek-official }`). A patch replaces the whole
+#    `config`; the base row has exactly that one field, so restating it is
+#    the complete config. The explicit id beats auto-selection: with it set,
+#    `web.search()` always routes to this provider.
+#
+# 3. `id: web-search-deepseek` — disabled so no second USABLE provider
+#    lingers. The shipped DeepSeek provider's `available()` is effectively
+#    always true (its key thunk is always defined), so mere coexistence
+#    would make any future removal of the explicit `searchProvider` config
+#    throw WEB_PROVIDER_AMBIGUOUS. Remove this entry to keep both
+#    registered — the explicit config above still selects deterministically.
+#
+# The `tool-web` row is intentionally untouched: the model-facing
+# `web_search` tool (schema, prompt guidance, UI card) is provider-neutral;
+# only the seam's provider selection changes.
+#
+# Settings layer (~/.dsh/settings.yaml, section `web-searxng:`) overrides
+# the row config and is re-projected per call — endpoint changes need no
+# restart. Composition changes (the block below) need a dsh server restart.
+# ─────────────────────────────────────────────────────────────────────────────
+- insert:
+    - id: web-searxng
+      name: dsh-searxng
+      inject: [web]
+      config:
+        baseURL: http://127.0.0.1:8888
+
+- id: web
+  config:
+    searchProvider: searxng
+
+- id: web-search-deepseek
+  disabled: true
